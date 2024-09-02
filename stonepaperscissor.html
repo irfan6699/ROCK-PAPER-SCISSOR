@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stone Paper Scissor</title>
+    <style>
+        /* Include the CSS provided earlier */
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            margin: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        button:active {
+            background-color: #397d3f;
+        }
+
+        .choice, .score {
+            margin: 20px 0;
+            font-size: 1.5rem;
+            color: #555;
+            text-align: center;
+        }
+
+        .score {
+            font-weight: bold;
+        }
+
+        button:focus {
+            outline: none;
+        }
+
+        .reset-button {
+            background-color: #f44336;
+        }
+
+        .reset-button:hover {
+            background-color: #e53935;
+        }
+
+        .reset-button:active {
+            background-color: #c62828;
+        }
+
+        .autoplay-button {
+            background-color: #ff9800;
+        }
+
+        .autoplay-button:hover {
+            background-color: #fb8c00;
+        }
+
+        .autoplay-button:active {
+            background-color: #ef6c00;
+        }
+    </style>
+</head>
+<body>
+    <h1>STONE PAPER SCISSOR</h1>
+    <button onclick="playGame('STONE');">STONE</button>
+    <button onclick="playGame('PAPER');">PAPER</button>
+    <button onclick="playGame('SCISSOR');">SCISSOR</button>
+    <p class="choice"></p>
+    <p class="score"></p>
+    <button class="reset-button" onclick="reset()">RESET BUTTON</button>
+    <button class="autoplay-button" onclick="autoPlay();">AUTOPLAY</button>
+    <p class="score"></p>
+    
+    <script>
+        let score = JSON.parse(localStorage.getItem('score')) || { userScore: 0, computerScore: 0, tie: 0 };
+        let { userScore, computerScore, tie } = score;
+
+        function playGame(playerMove) {
+            const result = computerMove();
+            let mainResult = '';
+            
+            if (playerMove === 'STONE') {
+                if (result === 'STONE') {
+                    mainResult = 'match tied';
+                } else if (result === 'PAPER') {
+                    mainResult = 'you lose';
+                } else if (result === 'SCISSOR') {
+                    mainResult = 'you win';
+                }
+            } else if (playerMove === 'PAPER') {
+                if (result === 'STONE') {
+                    mainResult = 'you win';
+                } else if (result === 'PAPER') {
+                    mainResult = 'match tied';
+                } else if (result === 'SCISSOR') {
+                    mainResult = 'you lose';
+                }
+            } else if (playerMove === 'SCISSOR') {
+                if (result === 'STONE') {
+                    mainResult = 'you lose';
+                } else if (result === 'PAPER') {
+                    mainResult = 'you win';
+                } else if (result === 'SCISSOR') {
+                    mainResult = 'match tied';
+                }
+            }
+            
+            updateScore(mainResult);
+            updatedScore();
+            
+            document.querySelector(`.choice`).innerHTML = `User: ${playerMove} | Computer: ${result}`;
+            localStorage.setItem('score', JSON.stringify({ userScore, computerScore, tie }));
+        }
+
+        function updatedScore() {
+            const scoreCard = document.querySelector('.score');
+            scoreCard.innerHTML = `Wins: ${userScore} | Losses: ${computerScore} | Ties: ${tie}`;
+        }
+        
+        function computerMove() {
+            const computer = Math.random() * 3;
+            if (computer < 1) {
+                return 'STONE';
+            } else if (computer >= 1 && computer < 2) {
+                return 'PAPER';
+            } else {
+                return 'SCISSOR';
+            }
+        }
+
+        function updateScore(mainResult) {
+            if (mainResult === 'you win') {
+                userScore++;
+            } else if (mainResult === 'you lose') {
+                computerScore++;
+            } else if (mainResult === 'match tied') {
+                tie++;
+            }
+        }
+
+        function reset() {
+            userScore = 0;
+            computerScore = 0;
+            tie = 0;
+            localStorage.setItem('score', JSON.stringify({ userScore, computerScore, tie }));
+            updatedScore(); // Update the displayed score after resetting
+            alert('Scores have been reset.');
+        }
+
+        function autoPlay() {
+            setInterval(function() {
+                playGame(computerMove());
+            }, 1000);
+        }
+
+        // Ensure the score is displayed when the page loads
+        updatedScore();
+    </script>
+</body>
+</html>
